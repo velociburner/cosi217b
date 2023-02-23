@@ -7,6 +7,10 @@
  *
  */
 
+body {
+    background: linen;
+}
+
 div {
     border: thin solid black;
     padding: 8px;
