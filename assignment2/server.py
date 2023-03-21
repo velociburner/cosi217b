@@ -1,25 +1,32 @@
 from flask import Flask, request, render_template
-from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
+from bs4 import BeautifulSoup
 from ner import SpacyDocument
 
 
 app = Flask(__name__)
-api = Api(app)
+# don't use as a real server, just hardcode the key
+app.config['SECRET_KEY'] = '8a2afc2205a15bcb2cec06a1a7268b80'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db_entities.sqlite'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 
-class NerApi(Resource):
+class Entity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    count = db.Column(db.Integer, default=1, nullable=False)
 
-    def get(self):
-        return {
-            'description': 'GET request to /api returns this message, POST returns the result of processing a text file. Visit http://127.0.0.1:5000/ for web server.',
-            'resources': ['/', '/api'],
-            'port': 5000
-        }
+    def __repr__(self):
+        return f"{self.name}: {self.count}"
 
-    def post(self):
-        text = request.get_data(as_text=True)
-        doc = SpacyDocument(text)
-        return doc.get_entities()
+
+def create_all():
+    with app.app_context():
+        db.create_all()
+
+
+create_all()
 
 
 @app.route("/")
@@ -32,10 +39,25 @@ def submit():
     if request.form['button'] == "Submit":
         doc = SpacyDocument(request.form['box'])
         entities = doc.get_entities_with_markup()
+        parser = BeautifulSoup(entities, "xml")
+
+        for entity in parser.find_all("entity"):
+            entry = Entity.query.filter_by(name=entity.text).first()
+            if entry is not None:
+                entry.count += 1
+            else:
+                db.session.add(Entity(name=entity.text))
+
+        db.session.commit()
+
         return render_template("home.html", entities=entities)
 
 
-api.add_resource(NerApi, "/api")
+@app.get("/list")
+def list():
+    entities = Entity.query.all()
+    print(entities)
+    return render_template("list.html", entities=entities)
 
 
 if __name__ == "__main__":

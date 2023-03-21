@@ -16,6 +16,13 @@ div {
     padding: 8px;
 }
 
+table, td {
+    font-size: 14pt;
+    border: 2px solid black;
+    border-collapse: collapse;
+    padding: 2px;
+}
+
 markup {
     line-height: 2.0;
     direction: ltr

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/main.css') }}>
+    </head>
+
+    <body>
+        <h1>Database results</h1>
+        <p>All entities seen so far:</p>
+
+        <table>
+            {% for entity in entities %}
+            <tr>
+                <td>{{ entity.name }}</td>
+                <td>{{ entity.count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p></p>
+        <a href="/">Back to form</a>
+
+    </body>
+</html>
