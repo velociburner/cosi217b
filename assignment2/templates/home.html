@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href={{ url_for('static', filename='css/main.css') }}>
+    </head>
+
+    <body>
+        <h1>Named Entity Recognition</h1>
+
+        <div>
+            <p>Enter text to be processed by spaCy NER.</p>
+            <form action="/" method="post" accept-charset="utf-8">
+                <textarea rows="5" name="box"></textarea>
+                <input type="submit" value="Submit" name="button"/>
+            </form>
+        </div>
+
+        <p>{{ entities|safe }}</p>
+
+    </body>
+</html>
