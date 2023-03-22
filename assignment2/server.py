@@ -56,9 +56,8 @@ def submit():
 @app.get("/list")
 def list():
     entities = Entity.query.all()
-    print(entities)
     return render_template("list.html", entities=entities)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
